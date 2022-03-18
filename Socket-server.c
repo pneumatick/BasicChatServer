@@ -8,19 +8,21 @@
 #include <string.h>
 #include <sys/types.h>
  
-int main(void) {
+int main() {
 	int listenfd = 0; // Socket file descriptor
 	int connfd = 0;   // Accepted request file descriptor
-  	int n;
+  	int n = 0;
 
 	struct sockaddr_in serv_addr;
 
 	char sendBuff[1025];  
 	int numrv;  
 
+	// Instantiate the socket
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 	printf("Success: Socket retrieved\n");
 
+	// Initialize structure and buffer
 	memset(&serv_addr, '0', sizeof(serv_addr));
 	memset(sendBuff, '0', sizeof(sendBuff));
 
@@ -32,6 +34,7 @@ int main(void) {
 	// aka "assigning a name to the socket"
 	bind(listenfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
 
+	// Handle listening error
 	if (listen(listenfd, 10) == -1) {
 		printf("Failed to listen\n");
 		return -1;
@@ -45,8 +48,9 @@ int main(void) {
         // Main loop 
 	while (1) {
 		while ((n = read(connfd, sendBuff, sizeof(sendBuff) - 1)) > 0) {
-			//sendBuff[n] = 0;
-			printf("Message received from %d: %s", connfd, sendBuff);
+			sendBuff[n] = 0;
+			printf("Message received from %d: ", connfd);
+			fputs(sendBuff, stdout);
 			write(connfd, sendBuff, strlen(sendBuff));
 		}
 

@@ -40,9 +40,9 @@ int main() {
 	while (1) {
 		// Read messages from the server 
 		while ((n = read(sockfd, recvBuff, sizeof(recvBuff) - 1)) > 0) {
-			recvBuff[n] = 0;
+			recvBuff[n] = 0;	// Mark end of string
 			
-			// Display server message
+			// Display server messages
 			printf("Message from server: ");
 			if (fputs(recvBuff, stdout) == EOF) {
 				printf("\n Error : Fputs error");
@@ -54,9 +54,9 @@ int main() {
 			printf("Message: ");
 			fgets(sendBuff, sizeof(sendBuff), stdin);
 			write(sockfd, sendBuff, strlen(sendBuff));
-
 		}
-	 
+
+		// Handle read errors
 	  	if (n < 0) {
 	      		printf("\nRead error\n");
 	    	}
