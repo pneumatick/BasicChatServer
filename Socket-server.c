@@ -11,7 +11,8 @@
 int main(void) {
 	int listenfd = 0; // Socket file descriptor
 	int connfd = 0;   // Accepted request file descriptor
-  
+  	int n;
+
 	struct sockaddr_in serv_addr;
 
 	char sendBuff[1025];  
@@ -35,17 +36,28 @@ int main(void) {
 		printf("Failed to listen\n");
 		return -1;
 	}     
+	
+	// Accept a single awaiting request
+	connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL);
+	strcpy(sendBuff, "Client has connected.\n");
+	write(connfd, sendBuff, strlen(sendBuff));
 
         // Main loop 
-	while(1) {      
-		connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL); // Accept awaiting request
-	
-		strcpy(sendBuff, "Client has connected.\n");
-		write(connfd, sendBuff, strlen(sendBuff));
+	while (1) {
+		while ((n = read(connfd, sendBuff, sizeof(sendBuff) - 1)) > 0) {
+			//sendBuff[n] = 0;
+			printf("Message received from %d: %s", connfd, sendBuff);
+			write(connfd, sendBuff, strlen(sendBuff));
+		}
 
-		close(connfd);    
+		if (n < 0) {
+			printf("\nRead error\n");
+		}
+
 		sleep(1);
-	} 
+	}
+
+	close(connfd);	
 
 	return 0;
 }
